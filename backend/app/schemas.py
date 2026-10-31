@@ -139,3 +139,29 @@ class BudgetStatus(BaseModel):
 class BudgetStatusReport(BaseModel):
     month: str
     items: list[BudgetStatus]
+
+
+class CategorySpend(BaseModel):
+    category_id: int
+    category_name: str
+    spent: Decimal
+    percent_of_total: Decimal
+    previous_spent: Decimal
+    change_percent: Decimal | None  # null when last month was zero
+
+
+class DailySpend(BaseModel):
+    date: dt.date
+    spent: Decimal
+
+
+class DashboardOut(BaseModel):
+    month: str
+    total_spent: Decimal
+    transaction_count: int
+    previous_month: str
+    previous_total: Decimal
+    change_amount: Decimal
+    change_percent: Decimal | None  # null when last month was zero
+    by_category: list[CategorySpend]
+    daily: list[DailySpend]
