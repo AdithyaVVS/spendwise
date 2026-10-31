@@ -106,3 +106,36 @@ class TransactionPage(BaseModel):
     page_size: int
     total_pages: int
     total_amount: Decimal
+
+
+MONTH_PATTERN = r"^20\d{2}-(0[1-9]|1[0-2])$"
+
+
+class BudgetSet(BaseModel):
+    month: str = Field(pattern=MONTH_PATTERN, examples=["2026-10"])
+    category_id: int | None = None  # leave out for the overall budget
+    amount: Money
+
+
+class BudgetOut(BaseModel):
+    id: int
+    category_id: int | None
+    category_name: str | None
+    month: str
+    amount: Decimal
+
+
+class BudgetStatus(BaseModel):
+    budget_id: int
+    category_id: int | None
+    category_name: str
+    budget: Decimal
+    spent: Decimal
+    remaining: Decimal
+    percent_used: Decimal
+    state: str
+
+
+class BudgetStatusReport(BaseModel):
+    month: str
+    items: list[BudgetStatus]
