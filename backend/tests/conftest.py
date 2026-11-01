@@ -71,3 +71,15 @@ def alice(client):
 def bob(client):
     user_id, headers = make_user(client, "bob@gmail.com")
     return SimpleNamespace(id=user_id, headers=headers)
+
+
+@pytest.fixture(autouse=True)
+def rate_limiting_off():
+    """Switched off in tests, except in the tests that turn it on to test it."""
+    from app.limiter import limiter
+
+    limiter.enabled = False
+    limiter.reset()
+    yield
+    limiter.enabled = False
+    limiter.reset()

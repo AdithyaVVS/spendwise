@@ -1,8 +1,9 @@
 const el = (id) => document.getElementById(id);
 
+// Colours taken from the rupee notes
 const PALETTE = [
-  "#2563eb", "#16a34a", "#f59e0b", "#dc2626", "#7c3aed",
-  "#0891b2", "#db2777", "#65a30d", "#ea580c", "#475569",
+  "#6a52cf", "#1f8fa3", "#f0a31e", "#c0266b", "#4aa564",
+  "#8a948d", "#8a5a44", "#5aa0e6", "#c7a2e8", "#a3a82a",
 ];
 const STATE_LABELS = { ok: "On track", warning: "Close to limit", over: "Over budget" };
 
@@ -15,7 +16,16 @@ function chartsAvailable() {
   return typeof Chart !== "undefined";
 }
 
-/* ---------- the four number cards ---------- */
+/* ---------- which part of the month are we in? ---------- */
+
+function monthInfo(month) {
+  const now = currentMonth();
+  const [y, m] = month.split("-").map(Number);
+  const days = new Date(y, m, 0).getDate();
+  if (month < now) return { days, phase: "past" };
+  if (month > now) return { days, phase: "future" };
+  return { days, phase: "now", day: Number(todayISO().slice(8)) };
+}
 
 function describeChange(d) {
   const total = Number(d.total_spent);
@@ -35,26 +45,90 @@ function describeChange(d) {
   };
 }
 
-function renderStats(d) {
-  el("stat-total").textContent = formatMoney(d.total_spent);
-  el("stat-count").textContent = d.transaction_count;
-  el("stat-previous").textContent = formatMoney(d.previous_total);
-  el("stat-previous-label").textContent = "Spent in " + formatMonth(d.previous_month);
+/* ---------- the big number and the budget strip ---------- */
+
+function renderHero(d, report) {
+  el("hero-lead").textContent = "Spent in " + formatMonth(d.month);
+  el("hero-amount").textContent = formatMoney(d.total_spent);
+
+  const count = d.transaction_count;
+  el("meta-count").textContent = `${count} transaction${count === 1 ? "" : "s"}`;
   const change = describeChange(d);
-  const node = el("stat-change");
-  node.textContent = change.text;
-  node.className = "change " + change.cls;
-}
+  const changeNode = el("meta-change");
+  changeNode.textContent = change.text;
+  changeNode.className = change.cls;
 
-/* ---------- budget progress bars ---------- */
+  const overall = report.items.find((i) => i.category_id === null);
+  const sub = el("hero-sub");
+  const strip = el("strip");
+  const fill = el("strip-fill");
+  const pace = el("strip-pace");
+  const note = el("pace-note");
 
-function renderBudgets(report) {
-  const box = el("budget-list");
-  if (report.items.length === 0) {
-    box.innerHTML = '<p class="muted">No budgets set for this month. <a href="budgets.html">Set one</a>.</p>';
+  note.className = "pace-note";
+  note.textContent = "";
+  pace.hidden = true;
+
+  if (!overall) {
+    sub.innerHTML = 'No overall budget for this month. <a href="budgets.html">Set one</a>.';
+    strip.hidden = true;
+    fill.style.width = "0%";
     return;
   }
-  box.innerHTML = report.items
+
+  const remaining = Number(overall.remaining);
+  const budgetText = formatMoney(overall.budget);
+  sub.textContent =
+    remaining >= 0
+      ? `of your ${budgetText} budget. ${formatMoney(remaining)} left.`
+      : `of your ${budgetText} budget. ${formatMoney(-remaining)} over.`;
+
+  const info = monthInfo(d.month);
+  const used = Number(overall.percent_used);
+
+  strip.hidden = false;
+  strip.style.setProperty("--days", info.days);
+  fill.className = "strip-fill " + overall.state;
+  fill.style.width = "0%";
+  const width = Math.min(Math.max(used, 0), 100);
+  // Two frames, so the browser animates the fill growing from empty
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => {
+      fill.style.width = width + "%";
+    })
+  );
+
+  if (info.phase === "now") {
+    const paced = (info.day / info.days) * 100;
+    pace.style.left = paced + "%";
+    pace.hidden = false;
+
+    let verdict = "at about an even pace";
+    let cls = "";
+    if (used > paced + 3) {
+      verdict = "faster than an even pace";
+      cls = "bad";
+    } else if (used < paced - 3) {
+      verdict = "slower than an even pace";
+      cls = "good";
+    }
+    note.textContent =
+      `Day ${info.day} of ${info.days}. ${Math.round(paced)}% of the month has passed ` +
+      `and ${Math.round(used)}% of the budget is used, so you are spending ${verdict}.`;
+    note.className = "pace-note " + cls;
+  } else if (info.phase === "past") {
+    note.textContent = "This month is over.";
+  } else {
+    note.textContent = "This month has not started yet.";
+  }
+}
+
+/* ---------- category budgets ---------- */
+
+function renderBudgets(report) {
+  const items = report.items.filter((i) => i.category_id !== null);
+  el("budget-section").hidden = items.length === 0;
+  el("budget-list").innerHTML = items
     .map((item) => {
       const used = Number(item.percent_used);
       const width = Math.min(Math.max(used, 0), 100);
@@ -65,17 +139,19 @@ function renderBudgets(report) {
         <div class="budget-row">
           <div class="budget-head">
             <strong>${escapeHtml(item.category_name)}</strong>
-            <span class="badge ${item.state}">${STATE_LABELS[item.state] || item.state}</span>
+            <span class="budget-figures">${escapeHtml(formatMoney(item.spent))} of ${escapeHtml(formatMoney(item.budget))}</span>
           </div>
           <div class="bar"><div class="bar-fill ${item.state}" style="width: ${width}%"></div></div>
-          <div class="muted">${escapeHtml(formatMoney(item.spent))} of ${escapeHtml(formatMoney(item.budget))}
-            (${used.toFixed(1)}%) - ${escapeHtml(note)}</div>
+          <div class="budget-foot">
+            <span class="badge ${item.state}">${STATE_LABELS[item.state] || item.state}</span>
+            <span>${escapeHtml(note)} (${used.toFixed(1)}% used)</span>
+          </div>
         </div>`;
     })
     .join("");
 }
 
-/* ---------- categories: pie chart and table ---------- */
+/* ---------- categories: doughnut chart and table ---------- */
 
 function renderCategories(d) {
   const withSpending = d.by_category.filter((c) => Number(c.spent) > 0);
@@ -95,14 +171,17 @@ function renderCategories(d) {
           {
             data: withSpending.map((c) => Number(c.spent)),
             backgroundColor: withSpending.map((_, i) => PALETTE[i % PALETTE.length]),
+            borderColor: "#f8faf7",
+            borderWidth: 3,
           },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        cutout: "62%",
         plugins: {
-          legend: { position: "bottom" },
+          legend: { position: "bottom", labels: { usePointStyle: true, boxWidth: 8 } },
           tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${formatMoney(ctx.parsed)}` } },
         },
       },
@@ -147,14 +226,25 @@ function renderDaily(d) {
     type: "bar",
     data: {
       labels: d.daily.map((x) => String(Number(x.date.slice(8)))),
-      datasets: [{ label: "Spent", data: d.daily.map((x) => Number(x.spent)), backgroundColor: "#2563eb" }],
+      datasets: [
+        {
+          label: "Spent",
+          data: d.daily.map((x) => Number(x.spent)),
+          backgroundColor: "#6a52cf",
+          borderRadius: 4,
+        },
+      ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
-        x: { title: { display: true, text: "Day of month" } },
-        y: { beginAtZero: true, ticks: { callback: (value) => formatMoney(value) } },
+        x: { title: { display: true, text: "Day of month" }, grid: { display: false } },
+        y: {
+          beginAtZero: true,
+          grid: { color: "rgba(21, 38, 44, 0.08)" },
+          ticks: { callback: (value) => formatMoney(value) },
+        },
       },
       plugins: {
         legend: { display: false },
@@ -178,7 +268,7 @@ async function load(month) {
     const [dash, budgets] = await Promise.all([api.dashboard(month), api.budgetStatus(month)]);
     if (mine !== latestRequest) return;
     el("dash-content").hidden = false;
-    renderStats(dash);
+    renderHero(dash, budgets);
     renderBudgets(budgets);
     renderCategories(dash);
     renderDaily(dash);
@@ -191,7 +281,12 @@ async function load(month) {
 function init() {
   if (!requireLogin()) return;
   renderNav("dashboard");
-  if (!chartsAvailable()) el("chart-warning").hidden = false;
+  if (chartsAvailable()) {
+    Chart.defaults.font.family = '"Hanken Grotesk", system-ui, sans-serif';
+    Chart.defaults.color = "#506268";
+  } else {
+    el("chart-warning").hidden = false;
+  }
   picker = setupMonthPicker(load);
   picker.start();
 }

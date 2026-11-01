@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.config import settings
 from app.database import get_db
 from app.dependencies import get_current_user
+from app.limiter import limiter
 from app.models import User
 from app.schemas import Token, UserCreate, UserOut
 from app.security import (
@@ -18,7 +20,8 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
 @router.post("/register", response_model=UserOut, status_code=201)
-def register(payload: UserCreate, db: Session = Depends(get_db)):
+@limiter.limit(settings.register_rate_limit)
+def register(request: Request, payload: UserCreate, db: Session = Depends(get_db)):
     user = User(email=payload.email, password_hash=hash_password(payload.password))
     db.add(user)
     try:
@@ -31,7 +34,12 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=Token)
-def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+@limiter.limit(settings.login_rate_limit)
+def login(
+    request: Request,
+    form: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
+):
     # OAuth2 forms call the email field "username"
     user = db.query(User).filter(User.email == form.username.strip().lower()).first()
     password_ok = verify_password(form.password, user.password_hash if user else DUMMY_HASH)

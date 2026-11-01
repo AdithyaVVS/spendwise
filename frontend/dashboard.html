@@ -9,10 +9,10 @@
 <body>
   <nav id="nav"></nav>
   <main>
-    <div class="card month-bar">
-      <button id="month-prev" type="button" class="secondary small" aria-label="Previous month">&larr; Prev</button>
+    <div class="month-bar">
+      <button id="month-prev" type="button" class="secondary" aria-label="Previous month">&lsaquo;</button>
       <h1 id="month-label"></h1>
-      <button id="month-next" type="button" class="secondary small" aria-label="Next month">Next &rarr;</button>
+      <button id="month-next" type="button" class="secondary" aria-label="Next month">&rsaquo;</button>
       <input id="month-input" type="month" min="2000-01" max="2099-12" aria-label="Choose a month">
     </div>
 
@@ -22,29 +22,28 @@
     <div id="dash-message" class="message" hidden></div>
 
     <div id="dash-content" hidden>
-      <div class="stat-grid">
-        <div class="stat">
-          <div class="value" id="stat-total">-</div>
-          <div class="label">Total spent</div>
+      <section class="hero">
+        <p class="hero-lead" id="hero-lead"></p>
+        <p class="hero-amount" id="hero-amount"></p>
+        <p class="hero-sub" id="hero-sub"></p>
+        <div class="strip" id="strip" hidden>
+          <div class="strip-track">
+            <div class="strip-fill" id="strip-fill"></div>
+            <div class="strip-ticks"></div>
+          </div>
+          <div class="strip-pace" id="strip-pace" hidden></div>
         </div>
-        <div class="stat">
-          <div class="value" id="stat-count">-</div>
-          <div class="label">Transactions</div>
+        <p class="pace-note" id="pace-note"></p>
+        <div class="hero-meta">
+          <span id="meta-count"></span>
+          <span id="meta-change"></span>
         </div>
-        <div class="stat">
-          <div class="value" id="stat-previous">-</div>
-          <div class="label" id="stat-previous-label">Last month</div>
-        </div>
-        <div class="stat">
-          <div class="change" id="stat-change">-</div>
-          <div class="label">Compared with last month</div>
-        </div>
-      </div>
+      </section>
 
-      <div class="card">
-        <h2>Budgets</h2>
+      <section class="section" id="budget-section" hidden>
+        <h2>Category budgets</h2>
         <div id="budget-list"></div>
-      </div>
+      </section>
 
       <div class="chart-grid">
         <div class="card">

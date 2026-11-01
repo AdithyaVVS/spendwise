@@ -7,35 +7,53 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <main>
-    <div class="card auth-card">
-      <h1 id="auth-title">Log in to SpendWise</h1>
-      <form id="auth-form">
-        <label for="email">Email</label>
-        <input id="email" type="email" required autocomplete="username">
-
-        <label for="password">Password</label>
-        <input id="password" type="password" required autocomplete="current-password">
-
-        <div id="confirm-row" hidden>
-          <label for="confirm">Confirm password</label>
-          <input id="confirm" type="password" autocomplete="new-password">
-          <p class="muted">Use at least 8 characters.</p>
+  <div class="auth-split">
+    <section class="auth-intro">
+      <div class="auth-brand">SpendWise</div>
+      <p class="auth-headline">See where your money went.</p>
+      <p class="auth-lede">Add what you spend, set a limit for the month, and check how the month is going against it.</p>
+      <div class="auth-sample" aria-hidden="true">
+        <div class="strip">
+          <div class="strip-track">
+            <div class="strip-fill"></div>
+            <div class="strip-ticks"></div>
+          </div>
+          <div class="strip-pace"></div>
         </div>
+        <p>A sample month: 62% of the budget is used by day 15 of 31. The white line marks an even pace.</p>
+      </div>
+    </section>
 
-        <div class="actions-row">
-          <button type="submit" id="auth-submit">Log in</button>
-        </div>
-      </form>
+    <main class="auth-panel">
+      <div class="auth-panel-inner">
+        <h1 id="auth-title">Log in to SpendWise</h1>
+        <form id="auth-form">
+          <label for="email">Email</label>
+          <input id="email" type="email" required autocomplete="username">
 
-      <div id="auth-message" class="message" hidden></div>
+          <label for="password">Password</label>
+          <input id="password" type="password" required autocomplete="current-password">
 
-      <p class="muted">
-        <span id="toggle-text">New here?</span>
-        <a href="#" id="toggle-link">Create an account</a>
-      </p>
-    </div>
-  </main>
+          <div id="confirm-row" hidden>
+            <label for="confirm">Confirm password</label>
+            <input id="confirm" type="password" autocomplete="new-password">
+            <p class="muted">Use at least 8 characters.</p>
+          </div>
+
+          <div class="actions-row">
+            <button type="submit" id="auth-submit">Log in</button>
+          </div>
+        </form>
+
+        <div id="auth-message" class="message" hidden></div>
+
+        <p class="muted">
+          <span id="toggle-text">New here?</span>
+          <a href="#" id="toggle-link">Create an account</a>
+        </p>
+      </div>
+    </main>
+  </div>
 
   <script src="js/app.js"></script>
   <script src="js/login.js"></script>
