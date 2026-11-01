@@ -1,0 +1,5 @@
+﻿date,amount,description,category
+2026-08-02,100,Good row,Food
+2026-08-03,-5,Negative amount,Food
+2026-08-04,abc,Not a number,Food
+2026-08-05,50,No category,

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpendWise - Import</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav id="nav"></nav>
+  <main>
+    <div class="card">
+      <h1>Import from CSV</h1>
+      <p class="muted">Upload a bank statement or spreadsheet export. The file needs a header row, for example:</p>
+      <pre class="example">date,amount,description,category
+2026-10-05,250.50,Lunch,Food
+05/10/2026,"1,250.00",Metro card,Transport</pre>
+      <ul class="plain muted">
+        <li><strong>date</strong>, <strong>amount</strong> and <strong>category</strong> are required, <strong>description</strong> is optional, and the columns can be in any order.</li>
+        <li>Dates can be 2026-10-05 or 05/10/2026 (day first).</li>
+        <li>Maximum 1 MB and 1000 rows per file.</li>
+        <li>New categories are created for you. Rows you already have (same date, amount, description and category) are skipped, so importing the same file twice is safe.</li>
+        <li>Bad rows are rejected one by one. The good rows are still imported.</li>
+      </ul>
+
+      <form id="import-form">
+        <label for="csv-file">CSV file</label>
+        <input id="csv-file" type="file" accept=".csv,text/csv">
+        <div class="actions-row">
+          <button type="submit" id="import-submit">Upload and import</button>
+        </div>
+      </form>
+      <div id="import-message" class="message" hidden></div>
+    </div>
+
+    <div class="card" id="result-card" hidden>
+      <h2>Import result</h2>
+      <div id="result"></div>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script src="js/import.js"></script>
+</body>
+</html>

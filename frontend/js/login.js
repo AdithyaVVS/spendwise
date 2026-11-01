@@ -45,7 +45,7 @@ form.addEventListener("submit", async (event) => {
     if (mode === "register") await api.register(email, password);
     const token = await api.login(email, password);
     saveLogin(token.access_token, email);
-    window.location.replace("transactions.html");
+    window.location.replace("dashboard.html");
   } catch (err) {
     showMessage(messageBox, err.message, "error");
   } finally {
@@ -54,4 +54,5 @@ form.addEventListener("submit", async (event) => {
 });
 
 // Already logged in? Skip this page.
-if (getToken()) window.location.replace("transactions.html");
+if (getToken()) window.location.replace("dashboard.html");
+

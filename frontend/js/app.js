@@ -302,3 +302,79 @@ function askText(message, initial, maxLength) {
     cancelValue: null,
   });
 }
+
+
+/* ---------- added in step 11: more API calls, menu and month picker ---------- */
+
+Object.assign(api, {
+  dashboard: (month) => request("/api/dashboard" + queryString({ month })),
+  budgetStatus: (month) => request("/api/budgets/status" + queryString({ month })),
+  setBudget: (body) => request("/api/budgets", jsonOptions("PUT", body)),
+  deleteBudget: (id) => request(`/api/budgets/${id}`, { method: "DELETE" }),
+  importCsv: (file) => {
+    const form = new FormData();
+    form.append("file", file);
+    // No Content-Type header here: the browser sets it, including the file boundary
+    return request("/api/transactions/import", { method: "POST", body: form });
+  },
+});
+
+NAV_LINKS.length = 0;
+NAV_LINKS.push(
+  ["dashboard", "dashboard.html", "Dashboard"],
+  ["transactions", "transactions.html", "Transactions"],
+  ["budgets", "budgets.html", "Budgets"],
+  ["import", "import.html", "Import"],
+  ["categories", "categories.html", "Categories"]
+);
+
+function currentMonth() {
+  return todayISO().slice(0, 7);
+}
+
+function shiftMonth(month, delta) {
+  const [y, m] = month.split("-").map(Number);
+  const d = new Date(y, m - 1 + delta, 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function formatMonth(month) {
+  const [y, m] = month.split("-").map(Number);
+  return new Date(y, m - 1, 1).toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+}
+
+function isValidMonth(text) {
+  return /^20\d{2}-(0[1-9]|1[0-2])$/.test(text);
+}
+
+// Month picker used by the dashboard and budgets pages. Calls onChange(month) whenever it changes.
+function setupMonthPicker(onChange) {
+  const input = document.getElementById("month-input");
+  const label = document.getElementById("month-label");
+  let month = currentMonth();
+
+  function apply(newMonth) {
+    month = newMonth;
+    input.value = month;
+    label.textContent = formatMonth(month);
+    onChange(month);
+  }
+
+  document.getElementById("month-prev").addEventListener("click", () => {
+    const earlier = shiftMonth(month, -1);
+    if (isValidMonth(earlier)) apply(earlier);
+  });
+  document.getElementById("month-next").addEventListener("click", () => {
+    const later = shiftMonth(month, 1);
+    if (isValidMonth(later)) apply(later);
+  });
+  input.addEventListener("change", () => {
+    if (isValidMonth(input.value)) apply(input.value);
+    else input.value = month;
+  });
+
+  return {
+    get month() { return month; },
+    start() { apply(month); },
+  };
+}
