@@ -165,3 +165,18 @@ class DashboardOut(BaseModel):
     change_percent: Decimal | None  # null when last month was zero
     by_category: list[CategorySpend]
     daily: list[DailySpend]
+
+
+class ImportRowError(BaseModel):
+    row: int
+    reason: str
+
+
+class ImportResult(BaseModel):
+    total_rows: int
+    imported: int
+    duplicates_skipped: int
+    rejected: int
+    categories_created: list[str]
+    errors: list[ImportRowError]
+    duplicate_rows: list[int]

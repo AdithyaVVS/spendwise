@@ -1,0 +1,14 @@
+﻿Date,Amount,Description,Category
+2026-11-01,250.50,Lunch at cafe,Food
+2026-11-02,"1,250.00",Metro card recharge,Transport
+03/11/2026,80,Auto ride,transport
+2026-11-04,450.75,Groceries,Groceries
+2026-11-05,60,Tea,food
+2026-11-05,60,Tea,food
+2026-11-06,-20,Refund,Food
+2026-11-07,abc,Bad amount,Food
+2026-13-45,100,Bad date,Food
+2026-11-08,100,No category,
+2026-11-09,10.999,Too many decimals,Food
+,,,
+2026-11-10,500,,Transport
