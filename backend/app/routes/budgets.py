@@ -144,7 +144,7 @@ def budget_status(
         percent = (spent / budget.amount * 100).quantize(Decimal("0.1"))
         if spent > budget.amount:
             state = "over"
-        elif percent >= 80:
+        elif spent * 100 >= budget.amount * 80:
             state = "warning"
         else:
             state = "ok"
@@ -179,3 +179,4 @@ def delete_budget(
     db.delete(budget)
     db.commit()
     return Response(status_code=204)
+
