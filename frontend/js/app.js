@@ -203,3 +203,102 @@ function renderNav(active) {
   button.addEventListener("click", logout);
   nav.appendChild(button);
 }
+
+
+/* ---------- in-page dialogs (the built-in browsers block prompt/confirm) ---------- */
+
+function openDialog({ message, withInput, initial, maxLength, confirmLabel, danger, cancelValue }) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement("div");
+    overlay.className = "overlay";
+
+    const box = document.createElement("div");
+    box.className = "dialog";
+    box.setAttribute("role", "dialog");
+    box.setAttribute("aria-modal", "true");
+
+    const text = document.createElement("p");
+    text.textContent = message;
+    box.appendChild(text);
+
+    let field = null;
+    if (withInput) {
+      field = document.createElement("input");
+      field.type = "text";
+      field.value = initial || "";
+      field.maxLength = maxLength || 50;
+      box.appendChild(field);
+    }
+
+    const row = document.createElement("div");
+    row.className = "actions-row";
+    const okButton = document.createElement("button");
+    okButton.textContent = confirmLabel;
+    if (danger) okButton.className = "danger";
+    const cancelButton = document.createElement("button");
+    cancelButton.textContent = "Cancel";
+    cancelButton.className = "secondary";
+    row.appendChild(okButton);
+    row.appendChild(cancelButton);
+    box.appendChild(row);
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    function close(result) {
+      document.removeEventListener("keydown", onKey);
+      overlay.remove();
+      resolve(result);
+    }
+    function accept() {
+      close(withInput ? field.value : true);
+    }
+    function onKey(event) {
+      if (event.key === "Escape") close(cancelValue);
+    }
+
+    okButton.addEventListener("click", accept);
+    cancelButton.addEventListener("click", () => close(cancelValue));
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay) close(cancelValue);
+    });
+    if (field) {
+      field.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          accept();
+        }
+      });
+    }
+    document.addEventListener("keydown", onKey);
+
+    if (field) {
+      field.focus();
+      field.select();
+    } else {
+      cancelButton.focus(); // the safe choice is highlighted for delete confirmations
+    }
+  });
+}
+
+// Returns true if the user clicks the confirm button, false otherwise
+function askConfirm(message) {
+  return openDialog({
+    message,
+    confirmLabel: "Delete",
+    danger: true,
+    cancelValue: false,
+  });
+}
+
+// Returns the typed text, or null if the user cancels
+function askText(message, initial, maxLength) {
+  return openDialog({
+    message,
+    withInput: true,
+    initial,
+    maxLength,
+    confirmLabel: "Save",
+    cancelValue: null,
+  });
+}

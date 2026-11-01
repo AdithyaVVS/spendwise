@@ -92,3 +92,24 @@ td.row-actions button + button { margin-left: 6px; }
 .pager select { width: auto; }
 
 .muted { color: #6b7280; font-size: 14px; }
+
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+.dialog {
+  background: #fff;
+  border-radius: 10px;
+  padding: 22px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+.dialog p { margin: 0 0 14px; font-size: 16px; }

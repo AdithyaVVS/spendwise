@@ -50,12 +50,12 @@ tableBody.addEventListener("click", async (event) => {
 
   try {
     if (button.dataset.action === "rename") {
-      const newName = prompt("New name for this category:", currentName);
+      const newName = await askText("New name for this category:", currentName, 50);
       if (newName === null || newName.trim() === "" || newName.trim() === currentName) return;
       await api.renameCategory(id, newName);
       await load();
     } else if (button.dataset.action === "delete") {
-      if (!confirm(`Delete the category "${currentName}"?`)) return;
+      if (!(await askConfirm(`Delete the category "${currentName}"?`))) return;
       await api.deleteCategory(id);
       await load();
     }

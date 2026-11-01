@@ -177,7 +177,7 @@ el("tx-body").addEventListener("click", async (event) => {
     startEditing(transaction);
   } else if (button.dataset.action === "delete") {
     const what = transaction.description || "this transaction";
-    if (!confirm(`Delete "${what}" (${formatMoney(transaction.amount)})?`)) return;
+    if (!(await askConfirm(`Delete "${what}" (${formatMoney(transaction.amount)})?`))) return;
     try {
       await api.deleteTransaction(id);
       if (state.editingId === id) resetForm();
@@ -235,3 +235,4 @@ async function init() {
   await load();
 }
 init();
+
