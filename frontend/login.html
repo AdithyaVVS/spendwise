@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpendWise - Log in</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main>
+    <div class="card auth-card">
+      <h1 id="auth-title">Log in to SpendWise</h1>
+      <form id="auth-form">
+        <label for="email">Email</label>
+        <input id="email" type="email" required autocomplete="username">
+
+        <label for="password">Password</label>
+        <input id="password" type="password" required autocomplete="current-password">
+
+        <div id="confirm-row" hidden>
+          <label for="confirm">Confirm password</label>
+          <input id="confirm" type="password" autocomplete="new-password">
+          <p class="muted">Use at least 8 characters.</p>
+        </div>
+
+        <div class="actions-row">
+          <button type="submit" id="auth-submit">Log in</button>
+        </div>
+      </form>
+
+      <div id="auth-message" class="message" hidden></div>
+
+      <p class="muted">
+        <span id="toggle-text">New here?</span>
+        <a href="#" id="toggle-link">Create an account</a>
+      </p>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

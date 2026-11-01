@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpendWise - Transactions</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav id="nav"></nav>
+  <main>
+    <div class="card">
+      <h2 id="form-title">Add a transaction</h2>
+      <p id="no-categories" class="message error" hidden>
+        You need a category first. <a href="categories.html">Create one here</a>.
+      </p>
+      <form id="tx-form">
+        <div class="form-grid">
+          <div>
+            <label for="tx-category">Category</label>
+            <select id="tx-category" required></select>
+          </div>
+          <div>
+            <label for="tx-amount">Amount (INR)</label>
+            <input id="tx-amount" type="text" inputmode="decimal" placeholder="250.50" required autocomplete="off">
+          </div>
+          <div>
+            <label for="tx-date">Date</label>
+            <input id="tx-date" type="date" required>
+          </div>
+          <div>
+            <label for="tx-description">Description (optional)</label>
+            <input id="tx-description" type="text" maxlength="255" autocomplete="off">
+          </div>
+        </div>
+        <div class="actions-row">
+          <button type="submit" id="tx-submit">Add transaction</button>
+          <button type="button" id="tx-cancel" class="secondary" hidden>Cancel edit</button>
+        </div>
+      </form>
+      <div id="form-message" class="message" hidden></div>
+    </div>
+
+    <div class="card">
+      <h2>Transactions</h2>
+      <form id="filter-form">
+        <div class="form-grid">
+          <div>
+            <label for="filter-from">From</label>
+            <input id="filter-from" type="date">
+          </div>
+          <div>
+            <label for="filter-to">To</label>
+            <input id="filter-to" type="date">
+          </div>
+          <div>
+            <label for="filter-category">Category</label>
+            <select id="filter-category"></select>
+          </div>
+          <div>
+            <label for="filter-search">Search description</label>
+            <input id="filter-search" type="text" maxlength="100" autocomplete="off">
+          </div>
+        </div>
+        <div class="actions-row">
+          <button type="submit">Apply filters</button>
+          <button type="button" id="filter-reset" class="secondary">Reset</button>
+        </div>
+      </form>
+
+      <p id="summary" class="muted"></p>
+      <div id="list-message" class="message" hidden></div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th class="amount">Amount</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tx-body"></tbody>
+        </table>
+      </div>
+      <p id="empty" class="muted" hidden>No transactions found.</p>
+
+      <div class="pager" id="pager" hidden>
+        <button type="button" id="prev" class="secondary small">Previous</button>
+        <span id="page-info" class="muted"></span>
+        <button type="button" id="next" class="secondary small">Next</button>
+        <select id="page-size" aria-label="Rows per page">
+          <option value="10">10 per page</option>
+          <option value="20" selected>20 per page</option>
+          <option value="50">50 per page</option>
+        </select>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script src="js/transactions.js"></script>
+</body>
+</html>

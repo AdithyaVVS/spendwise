@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpendWise - Categories</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav id="nav"></nav>
+  <main>
+    <div class="card">
+      <h1>Categories</h1>
+      <form id="cat-form">
+        <label for="cat-name">New category</label>
+        <div class="form-grid">
+          <input id="cat-name" type="text" maxlength="50" placeholder="e.g. Groceries" required autocomplete="off">
+          <div><button type="submit">Add category</button></div>
+        </div>
+      </form>
+      <div id="cat-message" class="message" hidden></div>
+    </div>
+
+    <div class="card">
+      <h2>Your categories</h2>
+      <p id="cat-empty" class="muted" hidden>You have no categories yet. Add one above.</p>
+      <div class="table-wrap">
+        <table id="cat-table" hidden>
+          <thead><tr><th>Name</th><th></th></tr></thead>
+          <tbody id="cat-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script src="js/categories.js"></script>
+</body>
+</html>
